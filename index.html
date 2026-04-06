@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>clonagram.com | Clone Grupos e Canais do Telegram</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d2ff;
+            --primary-dark: #0099cc;
+            --secondary: #3a7bd5;
+            --purple: #6a0dad;
+            --blue: #3498db;
+            --dark-bg: #0a0e27;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b8d0;
+            --success: #10b981;
+            --error: #ef4444;
+            --gold: #FFD700;
+            --gold-dark: #DAA520;
+            --border: #2d2d44;
+            --darker: #0a0a12;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at 20% 30%, #0f122e, #050814);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            backdrop-filter: blur(16px);
+            background: rgba(5, 8, 20, 0.8);
+            border-bottom: 1px solid var(--card-border);
+            z-index: 1000;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo { font-size: 1.7rem; font-weight: 800; display: flex; gap: 0.2rem; }
+        .logo span:first-child { background: linear-gradient(135deg, #fff, #a0b8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo span:last-child { color: var(--primary); text-shadow: 0 0 12px rgba(0,210,255,0.6); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* Hero */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+        .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary), #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero p { font-size: 1.2rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem; }
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(95deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(0,210,255,0.3);
+        }
+
+        /* Features & Pricing */
+        .features, .pricing { padding: 5rem 0; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 2rem; }
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: 0.2s;
+        }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .pricing-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; }
+        .price-card {
+            background: rgba(10,14,39,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: 2rem;
+            padding: 2rem;
+            flex: 1;
+            min-width: 280px;
+        }
+        .price-card.featured { border-color: var(--primary); background: linear-gradient(145deg, rgba(0,210,255,0.05), rgba(58,123,213,0.02)); transform: scale(1.02); }
+        .price-amount { font-size: 2.8rem; font-weight: 800; color: var(--primary); margin: 1rem 0; }
+        .price-features { list-style: none; margin: 1.5rem 0; }
+        .price-features li { padding: 0.5rem 0; display: flex; gap: 0.7rem; color: var(--text-secondary); }
+        .price-features li i { color: var(--success); }
+        .price-card button {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 1.5rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
+            color: white;
+            cursor: pointer;
+        }
+        .price-card.featured button { background: linear-gradient(95deg, var(--primary), var(--secondary)); color: #0a0e27; border: none; }
+
+        /* MODAL (copiado do COLAB HOT PRO) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10,10,18,0.96);
+            z-index: 2000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background-color: #1a1a2e;
+            border-radius: 24px;
+            padding: 35px 30px;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            margin: auto;
+        }
+        .close-modal {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #aaa;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-title { font-size: 1.8rem; margin-bottom: 10px; text-align: center; color: #fff; font-family: 'Orbitron', sans-serif; }
+        .modal-subtitle { text-align: center; color: #b0b0c0; margin-bottom: 30px; }
+        .modal-product-info {
+            background: rgba(0,210,255,0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .coupon-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .coupon-section input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #0a0a12;
+            color: #fff;
+        }
+        .coupon-section button {
+            padding: 12px 20px;
+            background: var(--gold);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #b0b0c0; }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0a0a12;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .has-error input { border-color: var(--error); }
+        .form-error { color: var(--error); font-size: 0.75rem; margin-top: 5px; display: none; }
+        .has-error .form-error { display: block; }
+        .btn-gerar-pix {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .qr-wrapper {
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        #qrCodeImg { width: 200px; height: 200px; display: block; }
+        .pix-code-box {
+            background: #0a0a12;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+        .btn-copiar-pix {
+            width: 100%;
+            padding: 14px;
+            background: rgba(0,210,255,0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .payment-status { margin-top: 30px; padding: 20px; border-radius: 12px; background: rgba(0,0,0,0.4); }
+        .btn-verificar {
+            width: 100%;
+            padding: 14px;
+            background: var(--border);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ecc71;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .support-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e88e5;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            display: flex;
+            gap: 0.7rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            z-index: 100;
+        }
+        footer { text-align: center; padding: 2rem; border-top: 1px solid var(--card-border); color: var(--text-secondary); margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><span>clonagram</span><span>.com</span></div>
+            <ul class="nav-links">
+                <li><a href="#features">Recursos</a></li>
+                <li><a href="#pricing">Planos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Clone grupos e canais do <span class="gradient-text">Telegram em minutos</span></h1>
+                <p>Automação completa, histórico de mensagens e sincronização em tempo real. Solução profissional para scaling de comunidades.</p>
+                <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Começar agora →</button>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header"><h2>Por que escolher <span class="gradient-text">clonagram</span>?</h2><p>Tecnologia avançada para clone e monitoramento</p></div>
+                <div class="features-grid">
+                    <div class="feature-card"><i class="fas fa-layer-group" style="font-size:2rem;margin-bottom:1rem;color:var(--primary)"></i><h3>Clone Completo</h3><p>Importe todo o histórico de grupos privados/públicos com mídias.</p></div>
+                    <div class="feature-card"><i class="fas fa-bolt" style="font-size:2rem;margin-bottom:1rem;color:var(--primary)"></i><h3>Sincronização Real-time</h3><p>Novas mensagens replicadas instantaneamente para seu destino.</p></div>
+                    <div class="feature-card"><i class="fas fa-shield-alt" style="font-size:2rem;margin-bottom:1rem;color:var(--primary)"></i><h3>Segurança Máxima</h3><p>Criptografia ponta a ponta e proteção de dados.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <div class="section-header"><h2>Planos transparentes</h2><p>Escolha o ideal para seu negócio</p></div>
+                <div class="pricing-cards">
+                    <div class="price-card">
+                        <h3>Plano Básico</h3>
+                        <div class="price-amount">R$ 59,90</div>
+                        <ul class="price-features"><li><i class="fas fa-check-circle"></i> Até 20 jobs históricos</li><li><i class="fas fa-check-circle"></i> 10.000 mensagens/dia</li><li><i class="fas fa-check-circle"></i> Suporte a mídia</li><li><i class="fas fa-check-circle"></i> 5 jobs real-time</li></ul>
+                        <button onclick="openPaymentModal('Plano Básico', 59.90)">Assinar e gerar PIX</button>
+                    </div>
+                    <div class="price-card featured">
+                        <h3>Plano Enterprise</h3>
+                        <div class="price-amount">R$ 99,90</div>
+                        <ul class="price-features"><li><i class="fas fa-check-circle"></i> Jobs ilimitados</li><li><i class="fas fa-check-circle"></i> Mensagens ilimitadas</li><li><i class="fas fa-check-circle"></i> Suporte prioritário</li><li><i class="fas fa-check-circle"></i> Jobs em tempo real ilimitados</li></ul>
+                        <button onclick="openPaymentModal('Plano Enterprise', 99.90)">Assinar e gerar PIX</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE PAGAMENTO (SIGILOPAY - MESMO MÉTODO DO SITE COLAB HOT PRO) -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h3 class="modal-title">FINALIZAR COMPRA</h3>
+            <p class="modal-subtitle">Preencha seus dados para gerar o PIX</p>
+            <div class="modal-product-info">
+                <span id="modalProductName">—</span>
+                <span id="modalProductPrice">R$0,00</span>
+            </div>
+
+            <!-- Campo de cupom -->
+            <div class="coupon-section">
+                <input type="text" id="couponInput" placeholder="Cupom de desconto (COLAB5)">
+                <button id="applyCoupon">Aplicar</button>
+            </div>
+
+            <div id="formSection">
+                <div class="form-group" id="grp-name">
+                    <label>Nome completo *</label>
+                    <input type="text" id="inputName" placeholder="Ex: João da Silva">
+                    <span class="form-error">Informe seu nome completo.</span>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" id="grp-cpf">
+                        <label>CPF *</label>
+                        <input type="text" id="inputCPF" placeholder="000.000.000-00" maxlength="14">
+                        <span class="form-error">CPF inválido.</span>
+                    </div>
+                    <div class="form-group" id="grp-phone">
+                        <label>Celular *</label>
+                        <input type="text" id="inputPhone" placeholder="(11) 99999-9999" maxlength="15">
+                        <span class="form-error">Celular inválido.</span>
+                    </div>
+                </div>
+                <div class="form-group" id="grp-email">
+                    <label>E-mail *</label>
+                    <input type="email" id="inputEmail" placeholder="seuemail@exemplo.com">
+                    <span class="form-error">E-mail inválido.</span>
+                </div>
+                <button class="btn-gerar-pix" id="btnGerarPix">
+                    <i class="fas fa-qrcode"></i> Gerar PIX agora
+                </button>
+            </div>
+
+            <div id="pixArea" style="display: none;">
+                <div class="pix-success-row" style="text-align:center;color:#10b981;margin-bottom:1rem;">
+                    <i class="fas fa-check-circle"></i> PIX gerado! Pague agora e receba acesso imediato.
+                </div>
+                <div style="text-align:center;">
+                    <div class="qr-wrapper">
+                        <img id="qrCodeImg" src="" alt="QR Code PIX">
+                    </div>
+                </div>
+                <div class="pix-code-box" id="pixCopyCode">—</div>
+                <button class="btn-copiar-pix" id="btnCopiarPix">
+                    <i class="fas fa-copy"></i> Copiar código PIX
+                </button>
+                <div class="payment-status pending" id="paymentStatus">
+                    <div>⏳ Aguardando pagamento</div>
+                    <div style="font-size:0.8rem;">O PIX expira em 30 minutos. Após pagar, o status atualiza automaticamente.</div>
+                </div>
+                <button class="btn-verificar" id="btnVerificar">
+                    <i class="fas fa-sync-alt"></i> Verificar pagamento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://t.me/suphotvip" target="_blank" class="support-btn">
+        <i class="fab fa-telegram"></i> Suporte 24/7
+    </a>
+    <div class="toast" id="toast"></div>
+
+    <footer>
+        <div class="container">
+            <p>clonagram.com © 2025 • Tecnologia de ponta para automação no Telegram</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== CONFIGURAÇÕES (MESMAS KEYS DO COLAB HOT PRO) ====================
+        // ATENÇÃO: É OBRIGATÓRIO TER UM BACKEND PROXY EM /api/sigilopay
+        // O proxy deve receber { method, path, body } e encaminhar para a SigiloPay com as chaves abaixo.
+        const PROXY = '/api/sigilopay';   // ← APONTE PARA SEU ENDPOINT PROXY
+        const COUPON_CODE = 'COLAB5';
+        const DISCOUNT = 0.05; // 5%
+
+        let currentTransactionId = null;
+        let pollingInterval = null;
+        let currentProduct = { name: '', price: 0 };
+        let originalPrice = 0;
+
+        // Funções auxiliares
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.background = type === 'success' ? '#2ecc71' : '#e74c3c';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // Máscaras
+        const cpfInput = document.getElementById('inputCPF');
+        const phoneInput = document.getElementById('inputPhone');
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g,'').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+            });
+        }
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g,'').replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d{4})$/,'$1-$2');
+            });
+        }
+
+        function cleanNum(v) { return v.replace(/\D/g,''); }
+        function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+        function validCPF(cpf) {
+            cpf = cleanNum(cpf);
+            if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+            let s = 0;
+            for (let i = 0; i < 9; i++) s += +cpf[i] * (10 - i);
+            let r = (s * 10) % 11; if (r >= 10) r = 0;
+            if (r !== +cpf[9]) return false;
+            s = 0;
+            for (let i = 0; i < 10; i++) s += +cpf[i] * (11 - i);
+            r = (s * 10) % 11; if (r >= 10) r = 0;
+            return r === +cpf[10];
+        }
+
+        function setErr(id, hasError) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('has-error', hasError);
+        }
+
+        function validateForm() {
+            const name = document.getElementById('inputName').value.trim();
+            const cpf = document.getElementById('inputCPF').value;
+            const phone = document.getElementById('inputPhone').value;
+            const email = document.getElementById('inputEmail').value.trim();
+            let ok = true;
+            const nameOk = name.split(/\s+/).length >= 2;
+            setErr('grp-name', !nameOk); if (!nameOk) ok = false;
+            setErr('grp-cpf', !validCPF(cpf)); if (!validCPF(cpf)) ok = false;
+            setErr('grp-phone', cleanNum(phone).length < 10); if (cleanNum(phone).length < 10) ok = false;
+            setErr('grp-email', !validEmail(email)); if (!validEmail(email)) ok = false;
+            return ok;
+        }
+
+        // Proxy para chamar a SigiloPay (evita CORS)
+        async function proxyCall(method, path, body) {
+            const res = await fetch(PROXY, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ method, path, body }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.message || data?.error || `Erro ${res.status}`);
+            return data;
+        }
+
+        // Polling de confirmação de pagamento
+        function startPolling(txId) {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await proxyCall('GET', `/gateway/transaction/${txId}`);
+                    const status = (res?.status || res?.data?.status || '').toLowerCase();
+                    if (['paid','approved','completed','confirmed'].includes(status)) {
+                        clearInterval(pollingInterval);
+                        const statusDiv = document.getElementById('paymentStatus');
+                        if (statusDiv) {
+                            statusDiv.innerHTML = `<div style="background:#10b98120; padding:1rem; border-radius:1rem; text-align:center;">
+                                <i class="fas fa-check-circle" style="color:#10b981; font-size:2rem;"></i>
+                                <div style="font-weight:800; margin-top:0.5rem;">✅ PAGAMENTO CONFIRMADO!</div>
+                                <div style="font-size:0.8rem;">Acesso liberado! Entre em contato com o suporte via Telegram para ativação.</div>
+                                <a href="https://t.me/suphotvip" target="_blank" style="display:inline-block; margin-top:0.8rem; background:#00d2ff; padding:0.4rem 1rem; border-radius:2rem; color:#0a0e27; text-decoration:none;">Falar com suporte</a>
+                            </div>`;
+                        }
+                        showToast('Pagamento confirmado! ✅', 'success');
+                        const verifyBtn = document.getElementById('btnVerificar');
+                        if (verifyBtn) verifyBtn.style.display = 'none';
+                    }
+                } catch (_) {}
+            }, 8000);
+        }
+
+        // Abrir modal com o produto selecionado
+        window.openPaymentModal = function(productName, price) {
+            originalPrice = price;
+            currentProduct = { name: productName, price: price };
+            currentTransactionId = null;
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            document.getElementById('modalProductName').innerText = productName;
+            document.getElementById('modalProductPrice').innerText = 'R$ ' + price.toFixed(2).replace('.',',');
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('pixArea').style.display = 'none';
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        // Fechar modal
+        function closeModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+            if (pollingInterval) clearInterval(pollingInterval);
+        }
+        document.getElementById('closeModal').onclick = closeModal;
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('paymentModal')) closeModal();
+        };
+
+        // Cupom de desconto
+        document.getElementById('applyCoupon').addEventListener('click', () => {
+            const coupon = document.getElementById('couponInput').value.trim().toUpperCase();
+            let newPrice = originalPrice;
+            if (coupon === COUPON_CODE) {
+                newPrice = originalPrice * (1 - DISCOUNT);
+                showToast('Cupom aplicado! 5% de desconto.', 'success');
+            } else {
+                showToast('Cupom inválido.', 'error');
+            }
+            currentProduct.price = newPrice;
+            document.getElementById('modalProductPrice').innerText = 'R$ ' + newPrice.toFixed(2).replace('.',',');
+        });
+
+        // Gerar PIX
+        document.getElementById('btnGerarPix').addEventListener('click', async () => {
+            if (!validateForm()) {
+                showToast('Preencha todos os campos corretamente.', 'error');
+                return;
+            }
+            const btn = document.getElementById('btnGerarPix');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Gerando PIX...';
+
+            const name = document.getElementById('inputName').value.trim();
+            const cpf = cleanNum(document.getElementById('inputCPF').value);
+            const phone = cleanNum(document.getElementById('inputPhone').value);
+            const email = document.getElementById('inputEmail').value.trim();
+            const amount = parseFloat(currentProduct.price);
+
+            const payload = {
+                identifier: 'CLONA_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8),
+                amount: amount.toFixed(2),
+                description: currentProduct.name,
+                client: { name, email, document: cpf, phone }
+            };
+
+            try {
+                const data = await proxyCall('POST', '/gateway/pix/receive', payload);
+                const pixCode = data?.pix?.code || data?.data?.pix?.code || '';
+                const qrImg = data?.pix?.base64 || data?.data?.pix?.base64 || '';
+                const txId = data?.transactionId || data?.data?.transactionId || null;
+
+                currentTransactionId = txId;
+                document.getElementById('qrCodeImg').src = qrImg.startsWith('data:') ? qrImg : 'data:image/png;base64,' + qrImg;
+                document.getElementById('pixCopyCode').innerText = pixCode || 'Código não disponível';
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('pixArea').style.display = 'block';
+                if (txId) startPolling(txId);
+                showToast('PIX gerado! Realize o pagamento agora.', 'success');
+            } catch (err) {
+                showToast('Erro ao gerar PIX: ' + err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-qrcode"></i> Gerar PIX agora';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-qrcode"></i> Gerar PIX agora';
+            }
+        });
+
+        // Copiar código PIX
+        document.getElementById('btnCopiarPix').addEventListener('click', async () => {
+            const code = document.getElementById('pixCopyCode').innerText;
+            if (code && code !== '—') {
+                await navigator.clipboard.writeText(code);
+                showToast('Código PIX copiado!', 'success');
+            } else {
+                showToast('Nenhum PIX gerado ainda.', 'error');
+            }
+        });
+
+        // Botão verificar manual
+        document.getElementById('btnVerificar').addEventListener('click', async () => {
+            if (!currentTransactionId) return;
+            const btn = document.getElementById('btnVerificar');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Verificando...';
+            try {
+                const res = await proxyCall('GET', `/gateway/transaction/${currentTransactionId}`);
+                const status = (res?.status || res?.data?.status || '').toLowerCase();
+                if (['paid','approved','completed','confirmed'].includes(status)) {
+                    clearInterval(pollingInterval);
+                    document.getElementById('paymentStatus').innerHTML = `<div style="background:#10b98120; padding:1rem; border-radius:1rem; text-align:center;">
+                        <i class="fas fa-check-circle" style="color:#10b981; font-size:2rem;"></i>
+                        <div style="font-weight:800;">✅ PAGAMENTO CONFIRMADO!</div>
+                        <div>Acesso liberado! Entre em contato com o suporte.</div>
+                    </div>`;
+                    showToast('Pagamento confirmado! ✅', 'success');
+                    btn.style.display = 'none';
+                } else {
+                    showToast('Aguardando pagamento...', 'info');
+                }
+            } catch (e) {
+                showToast('Erro ao verificar: ' + e.message, 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Verificar pagamento';
+        });
+
+        // Adicionar spinner CSS
+        const style = document.createElement('style');
+        style.textContent = `@keyframes spin { to { transform: rotate(360deg); } } .spinner { display:inline-block; width:18px; height:18px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite; }`;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
